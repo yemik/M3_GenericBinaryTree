@@ -7,39 +7,15 @@ package com.m3s.ko;
 import org.junit.*;
 import org.junit.rules.TestName;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 
 /**
  * Unit test for simple Main.
  */
-public class AppTest
-{
-//    /**
-//     * Create the test case
-//     *
-//     * @param testName name of the test case
-//     */
-//    public AppTest( String testName )
-//    {
-//        super( testName );
-//    }
-//
-//    /**
-//     * @return the suite of tests being tested
-//     */
-//    public static Test suite()
-//    {
-//        return new TestSuite( AppTest.class );
-//    }
-//
-//    /**
-//     * Rigourous Test :-)
-//     */
-//    public void testApp()
-//    {
-//        assertTrue( true );
-//    }
-
+public class EmployeeTreeTests {
     private BinaryTreeGeneric<Employee> bst;
 
     @Rule
@@ -113,7 +89,7 @@ public class AppTest
         Employee john = new Employee("6", "John", "Montague");
         Employee jill = new Employee("15", "Jill", "Paton");
         Employee[] newNodes = {jim, john, jill};
-        bst.addNodes(newNodes);
+        bst.addArrayOfNodes(newNodes);
     }
     @Test
     public void checkBoardLeft() {
@@ -143,6 +119,48 @@ public class AppTest
     @Test
     public void checkBoardDescendRightNull() {
         addNodesBoardExample();
+        Assert.assertTrue(bst.getRootNode().right.left == null);
+    }
+
+
+    private void addNodesBoardExampleList() {
+        Employee jim = new Employee("1", "Jim", "Brandy");
+        Employee john = new Employee("6", "John", "Montague");
+        Employee jill = new Employee("15", "Jill", "Paton");
+        List<Employee> newNodes = new ArrayList<Employee>();
+        newNodes.add(jim);
+        newNodes.add(john);
+        newNodes.add(jill);
+        bst.addListOfNodes(newNodes);
+    }
+    @Test
+    public void checkBoardLeftList() {
+        addNodesBoardExampleList();
+        assertEquals(1, bst.getNodeValue(bst.findNode(new Employee("5")).left));
+    }
+    @Test
+    public void checkBoardRightList() {
+        addNodesBoardExampleList();
+        assertEquals(15, bst.getNodeValue(bst.findNode(new Employee("12")).right));
+    }
+    @Test
+    public void checkBoardDescendLeftList() {
+        addNodesBoardExampleList();
+        assertEquals(6, bst.getNodeValue(bst.getRootNode().left.right));
+    }
+    @Test
+    public void checkBoardDescendRightList() {
+        addNodesBoardExampleList();
+        assertEquals(15, bst.getNodeValue(bst.getRootNode().right.right));
+    }
+    @Test
+    public void checkBoardDescendLeftNullList() {
+        addNodesBoardExampleList();
+        Assert.assertTrue(bst.getRootNode().left.right.right == null);
+    }
+    @Test
+    public void checkBoardDescendRightNullList() {
+        addNodesBoardExampleList();
         Assert.assertTrue(bst.getRootNode().right.left == null);
     }
 
@@ -193,7 +211,7 @@ public class AppTest
         Employee john = new Employee("8", "John", "Montague");
         Employee jill = new Employee("15", "Jill", "Paton");
         Employee[] newNodes = {jim, john, jill};
-        bst.addNodes(newNodes);
+        bst.addArrayOfNodes(newNodes);
     }
     @Test
     public void checkAddNodeLength() {
@@ -209,6 +227,60 @@ public class AppTest
     public void checkAddNodeSortDesc() {
         addNodes();
         assertEquals(15, bst.getNodeValue(bst.getSortedTreeDesc().get(0)));
+    }
+
+    private void addEmployees() {
+        bst.getEmployees();
+    }
+
+    private void getThenAddEmployees() {
+        DAO<Employee> dao = new DAO<>();
+        List<Employee> employees = dao.getEmployees();
+        bst.addListOfNodes(employees);
+    }
+
+    private List<Employee> instantiateEmployees() {
+        DAO<Employee> dao = new DAO<>();
+        return dao.getEmployees();
+    }
+
+    @Test
+    public void checkEmployeesAdded() {
+        addEmployees();
+        // Check all 14 employees have been added
+        assertEquals(17,bst.getNumberOfNodes());
+    }
+
+    @Test
+    public void checkMillerHasGreatestID() {
+        addEmployees();
+        assertEquals(7934, bst.getNodeValue(bst.getSortedTreeDesc().get(0)));
+    }
+
+    @Test
+    public void checkEmployeesAddedAfterGet() {
+        getThenAddEmployees();
+        // Check all 14 employees have been added
+        assertEquals(17,bst.getNumberOfNodes());
+    }
+
+    @Test
+    public void checkMillerHasGreatestIDAfterGet() {
+        getThenAddEmployees();
+        assertEquals(7934, bst.getNodeValue(bst.getSortedTreeDesc().get(0)));
+    }
+
+    @Test
+    public void checkEmployeesAddedAfterInstantiation() {
+        bst = new BinaryTreeGeneric<>(instantiateEmployees());
+        // Check all 14 employees have been added
+        assertEquals(14,bst.getNumberOfNodes());
+    }
+
+    @Test
+    public void checkMillerHasGreatestIDAfterInstantiation() {
+        bst = new BinaryTreeGeneric<>(instantiateEmployees());
+        assertEquals(7934, bst.getNodeValue(bst.getSortedTreeDesc().get(0)));
     }
 
     @After
